@@ -34,7 +34,7 @@ void GB2312ToUTF_8(string& pOut, char* pText, int pLen) {
 	}
 }
 
-string url(string str) {
+string UrlEncode(string str) {
 	string tmp, ret;
 	GB2312ToUTF_8(tmp, (char*)str.c_str(), strlen(str.c_str()));
 	int len = tmp.length();

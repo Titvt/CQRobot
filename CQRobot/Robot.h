@@ -1,6 +1,6 @@
 ﻿#include <string>
 #include <vector>
-#include "url.h"
+#include "UrlEncode.h"
 
 using namespace std;
 
@@ -27,7 +27,7 @@ public:
 			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n叫我干啥(⊙o⊙)？");
 		}
 		if (message.substr(0, 6) == "百度：") {
-			send(ac, bindedGroup, "http://iwo.im/?q=" + url(message.substr(6)));
+			send(ac, bindedGroup, "http://iwo.im/?q=" + UrlEncode(message.substr(6)));
 		}
 	}
 };

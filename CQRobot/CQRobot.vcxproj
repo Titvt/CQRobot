@@ -26,7 +26,7 @@
     <ClInclude Include="appmain.h" />
     <ClInclude Include="cqp.h" />
     <ClInclude Include="Robot.h" />
-    <ClInclude Include="url.h" />
+    <ClInclude Include="UrlEncode.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="CQP.lib" />

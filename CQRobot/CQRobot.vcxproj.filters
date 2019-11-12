@@ -32,7 +32,7 @@
     <ClInclude Include="Robot.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="url.h">
+    <ClInclude Include="UrlEncode.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
