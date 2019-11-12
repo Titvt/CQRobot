@@ -29,12 +29,12 @@ public:
 	}
 
 	void processMessage(int64_t qq, string message) {
-		if (message.find("麦萌萌") != message.npos) {
+		if (message.find("麦萌萌") != message.npos)
 			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n叫我干啥(⊙o⊙)？");
-		}
-		if (message.substr(0, 6) == "百度：") {
+		if (message.substr(0, 6) == "百度：")
 			send(ac, bindedGroup, "http://iwo.im/?q=" + UrlEncode(message.substr(6)));
-		}
+		if (message == "谷歌")
+			send(ac, bindedGroup, "http://45.63.121.187/");
 	}
 };
 
@@ -95,7 +95,12 @@ public:
 	}
 
 	void processPrivateMessage(int64_t qq, string message) {
-		sendTo(ac, qq, "你好！我是麦萌萌小管家(*^_^*)");
+		if (message.find("麦萌萌") != message.npos)
+			sendTo(ac, qq, "你好！我是麦萌萌小管家(*^_^*)");
+		if (message.substr(0, 6) == "百度：")
+			sendTo(ac, qq, "http://iwo.im/?q=" + UrlEncode(message.substr(6)));
+		if (message == "谷歌")
+			sendTo(ac, qq, "http://45.63.121.187/");
 	}
 
 	bool preProcessGroupMessage(int64_t group, int64_t qq, string message) {
