@@ -4,6 +4,12 @@
 
 using namespace std;
 
+const int64_t OWNER = 1044805408LL;
+
+int32_t sendTo(int32_t ac, int64_t qq, string message) {
+	return CQ_sendPrivateMsg(ac, qq, message.c_str());
+}
+
 int32_t send(int32_t ac, int64_t group, string message) {
 	return CQ_sendGroupMsg(ac, group, message.c_str());
 }
@@ -62,8 +68,38 @@ public:
 		this->ac = ac;
 	}
 
-	bool preProcessMessage(int64_t group, int64_t qq, string message) {
-		if (qq == 1044805408LL) {
+	bool preProcessPrivateMessage(int64_t qq, string message) {
+		if (qq == OWNER) {
+			if (message.substr(0, 12) == "开启小管家：") {
+				int64_t group = stoll(message.substr(12));
+				if (!isBinded(group)) {
+					addRobot(group);
+					sendTo(ac, OWNER, "开启成功");
+				}
+				else
+					sendTo(ac, OWNER, "已经开启");
+				return true;
+			}
+			if (message.substr(0, 12) == "关闭小管家：") {
+				int64_t group = stoll(message.substr(12));
+				if (isBinded(group)) {
+					deleteRobot(group);
+					sendTo(ac, OWNER, "关闭成功");
+				}
+				else
+					sendTo(ac, OWNER, "已经关闭");
+				return true;
+			}
+		}
+		return false;
+	}
+
+	void processPrivateMessage(int64_t qq, string message) {
+		sendTo(ac, qq, "你好！我是麦萌萌小管家(*^_^*)");
+	}
+
+	bool preProcessGroupMessage(int64_t group, int64_t qq, string message) {
+		if (qq == OWNER) {
 			if (message == "开启小管家") {
 				if (!isBinded(group)) {
 					addRobot(group);
@@ -86,7 +122,7 @@ public:
 		return false;
 	}
 
-	void processMessage(int64_t group, int64_t qq, string message) {
+	void processGroupMessage(int64_t group, int64_t qq, string message) {
 		for (auto i = robots.begin(); i < robots.end(); i++) {
 			if ((*i)->getBindedGroup() == group)
 				(*i)->processMessage(qq, message);

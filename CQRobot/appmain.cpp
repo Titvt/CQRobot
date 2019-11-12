@@ -27,12 +27,13 @@ CQEVENT(int32_t, __eventExit, 0)() {
 }
 
 CQEVENT(int32_t, __eventPrivateMsg, 24)(int32_t subType, int32_t msgId, int64_t fromQQ, const char *msg, int32_t font) {
-	CQ_sendPrivateMsg(ac, fromQQ, "你好！我是麦萌萌小管家(*^_^*)");
-	return EVENT_IGNORE;
+	if (!(manager->preProcessPrivateMessage(fromQQ, string(msg))))
+		manager->processPrivateMessage(fromQQ, string(msg));
+	return EVENT_BLOCK;
 }
 
 CQEVENT(int32_t, __eventGroupMsg, 36)(int32_t subType, int32_t msgId, int64_t fromGroup, int64_t fromQQ, const char *fromAnonymous, const char *msg, int32_t font) {
-	if (!(manager->preProcessMessage(fromGroup, fromQQ, string(msg))))
-		manager->processMessage(fromGroup, fromQQ, string(msg));
-	return EVENT_IGNORE;
+	if (!(manager->preProcessGroupMessage(fromGroup, fromQQ, string(msg))))
+		manager->processGroupMessage(fromGroup, fromQQ, string(msg));
+	return EVENT_BLOCK;
 }
