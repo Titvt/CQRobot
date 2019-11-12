@@ -131,7 +131,7 @@ public:
 		string::size_type pos = 0;
 		while ((pos = reply.find("菲菲")) != string::npos)
 			reply.replace(pos, 4, "麦萌萌");
-		send(ac, qq, reply);
+		sendTo(ac, qq, reply);
 	}
 
 	bool preProcessGroupMessage(int64_t group, int64_t qq, string message) {
