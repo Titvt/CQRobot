@@ -1,5 +1,3 @@
-#include <Windows.h>
-
 using namespace std;
 
 void UnicodeToUTF_8(char* pOut, WCHAR* pText) {

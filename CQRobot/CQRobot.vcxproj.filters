@@ -35,6 +35,9 @@
     <ClInclude Include="UrlEncode.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="HTTP.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="CQP.lib" />

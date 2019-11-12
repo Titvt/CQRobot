@@ -25,6 +25,7 @@
   <ItemGroup>
     <ClInclude Include="appmain.h" />
     <ClInclude Include="cqp.h" />
+    <ClInclude Include="HTTP.h" />
     <ClInclude Include="Robot.h" />
     <ClInclude Include="UrlEncode.h" />
   </ItemGroup>

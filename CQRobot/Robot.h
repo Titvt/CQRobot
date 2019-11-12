@@ -1,6 +1,8 @@
 ﻿#include <string>
 #include <vector>
+#include <WS2tcpip.h>
 #include "UrlEncode.h"
+#include "HTTP.h"
 
 using namespace std;
 
@@ -29,12 +31,30 @@ public:
 	}
 
 	void processMessage(int64_t qq, string message) {
-		if (message.find("麦萌萌") != message.npos)
+		if (message == "麦萌萌") {
 			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n叫我干啥(⊙o⊙)？");
-		if (message.substr(0, 10) == "教你百度：")
+			return;
+		}
+		if (message.substr(0, 10) == "教你百度：") {
 			send(ac, bindedGroup, "http://iwo.im/?q=" + UrlEncode(message.substr(10)));
-		if (message.substr(0, 6) == "百度：")
+			return;
+		}
+		if (message.substr(0, 6) == "百度：") {
 			send(ac, bindedGroup, "https://www.baidu.com/s?wd=" + UrlEncode(message.substr(6)));
+			return;
+		}
+		if (message.substr(0, 22) == "[CQ:at,qq=3340741722] " && message.substr(22).length() != 0) {
+			string reply = HttpGet(message.substr(22));
+			string::size_type pos = 0;
+			while ((pos = reply.find("菲菲")) != string::npos)
+				reply.replace(pos, 4, "麦萌萌");
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n" + reply);
+			return;
+		}
+		if (message.find("[CQ:at,qq=3340741722]") != string::npos) {
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n叫我干啥(⊙o⊙)？");
+			return;
+		}
 	}
 };
 
@@ -95,12 +115,23 @@ public:
 	}
 
 	void processPrivateMessage(int64_t qq, string message) {
-		if (message.find("麦萌萌") != message.npos)
+		if (message == "麦萌萌") {
 			sendTo(ac, qq, "你好！我是麦萌萌小管家(*^_^*)");
-		if (message.substr(0, 10) == "教你百度：")
+			return;
+		}
+		if (message.substr(0, 10) == "教你百度：") {
 			sendTo(ac, qq, "http://iwo.im/?q=" + UrlEncode(message.substr(10)));
-		if (message.substr(0, 6) == "百度：")
+			return;
+		}
+		if (message.substr(0, 6) == "百度：") {
 			sendTo(ac, qq, "https://www.baidu.com/s?wd=" + UrlEncode(message.substr(6)));
+			return;
+		}
+		string reply = HttpGet(message.substr(22));
+		string::size_type pos = 0;
+		while ((pos = reply.find("菲菲")) != string::npos)
+			reply.replace(pos, 4, "麦萌萌");
+		send(ac, qq, reply);
 	}
 
 	bool preProcessGroupMessage(int64_t group, int64_t qq, string message) {
