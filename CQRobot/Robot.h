@@ -16,6 +16,19 @@ int32_t send(int32_t ac, int64_t group, string message) {
 	return CQ_sendGroupMsg(ac, group, message.c_str());
 }
 
+string regularifyReply(string reply) {
+	string::size_type pos = 0;
+	while ((pos = reply.find("菲菲")) != string::npos)
+		reply.replace(pos, 4, "麦萌萌");
+	pos = 0;
+	while ((pos = reply.find("{face:")) != string::npos)
+		reply.replace(pos, 6, "[CQ:face,id=");
+	pos = 0;
+	while ((pos = reply.find("}")) != string::npos)
+		reply.replace(pos, 1, "]");
+	return reply;
+}
+
 class Robot {
 	int64_t bindedGroup;
 	int32_t ac;
@@ -44,11 +57,7 @@ public:
 			return;
 		}
 		if (message.substr(0, 22) == "[CQ:at,qq=3340741722] " && message.substr(22).length() != 0) {
-			string reply = HttpGet(message.substr(22));
-			string::size_type pos = 0;
-			while ((pos = reply.find("菲菲")) != string::npos)
-				reply.replace(pos, 4, "麦萌萌");
-			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n" + reply);
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n" + regularifyReply(HttpGet(message)));
 			return;
 		}
 		if (message.find("[CQ:at,qq=3340741722]") != string::npos) {
@@ -127,11 +136,7 @@ public:
 			sendTo(ac, qq, "https://www.baidu.com/s?wd=" + UrlEncode(message.substr(6)));
 			return;
 		}
-		string reply = HttpGet(message);
-		string::size_type pos = 0;
-		while ((pos = reply.find("菲菲")) != string::npos)
-			reply.replace(pos, 4, "麦萌萌");
-		sendTo(ac, qq, reply);
+		sendTo(ac, qq, regularifyReply(HttpGet(message)));
 	}
 
 	bool preProcessGroupMessage(int64_t group, int64_t qq, string message) {
