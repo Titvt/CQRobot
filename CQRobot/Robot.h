@@ -127,7 +127,7 @@ public:
 			sendTo(ac, qq, "https://www.baidu.com/s?wd=" + UrlEncode(message.substr(6)));
 			return;
 		}
-		string reply = HttpGet(message.substr(22));
+		string reply = HttpGet(message);
 		string::size_type pos = 0;
 		while ((pos = reply.find("菲菲")) != string::npos)
 			reply.replace(pos, 4, "麦萌萌");
