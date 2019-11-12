@@ -98,9 +98,9 @@ public:
 		if (message.find("麦萌萌") != message.npos)
 			sendTo(ac, qq, "你好！我是麦萌萌小管家(*^_^*)");
 		if (message.substr(0, 10) == "教你百度：")
-			send(ac, qq, "http://iwo.im/?q=" + UrlEncode(message.substr(10)));
+			sendTo(ac, qq, "http://iwo.im/?q=" + UrlEncode(message.substr(10)));
 		if (message.substr(0, 6) == "百度：")
-			send(ac, qq, "https://www.baidu.com/s?wd=" + UrlEncode(message.substr(6)));
+			sendTo(ac, qq, "https://www.baidu.com/s?wd=" + UrlEncode(message.substr(6)));
 	}
 
 	bool preProcessGroupMessage(int64_t group, int64_t qq, string message) {
