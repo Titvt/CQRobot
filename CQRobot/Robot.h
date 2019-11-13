@@ -17,7 +17,7 @@ int32_t send(int32_t ac, int64_t group, string message) {
 }
 
 string regularifyReply(string reply) {
-	string::size_type pos = 0;
+	size_t pos = 0;
 	while ((pos = reply.find("菲菲")) != string::npos)
 		reply.replace(pos, 4, "麦萌萌");
 	pos = 0;
@@ -57,13 +57,31 @@ public:
 			return;
 		}
 		if (message.substr(0, 22) == "[CQ:at,qq=3340741722] " && message.substr(22).length() != 0) {
-			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n" + regularifyReply(HttpGet(message)));
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n" + regularifyReply(AI(message.substr(22))));
 			return;
 		}
-		if (message.find("[CQ:at,qq=3340741722]") != string::npos) {
+		if (message.substr(0, 6) == "翻译：") {
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "] 翻译结果为：\n" + XLAT("0", message.substr(6)));
+			return;
+		}
+		if (message.substr(0, 8) == "翻译ce：") {
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "] 翻译结果为：\n" + XLAT("1", message.substr(8)));
+			return;
+		}
+		if (message.substr(0, 8) == "翻译ec：") {
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "] 翻译结果为：\n" + XLAT("2", message.substr(8)));
+			return;
+		}
+		if (message.substr(0, 8) == "翻译cj：") {
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "] 翻译结果为：\n" + XLAT("15", message.substr(8)));
+			return;
+		}
+		if (message.substr(0, 8) == "翻译jc：") {
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "] 翻译结果为：\n" + XLAT("16", message.substr(8)));
+			return;
+		}
+		if (message.find("[CQ:at,qq=3340741722]") != string::npos)
 			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n叫我干啥(⊙o⊙)？");
-			return;
-		}
 	}
 };
 
@@ -124,7 +142,7 @@ public:
 	}
 
 	void processPrivateMessage(int64_t qq, string message) {
-		if (message == "麦萌萌") {
+		if (message == "麦萌萌" || message == "麦萌萌 ") {
 			sendTo(ac, qq, "你好！我是麦萌萌小管家(*^_^*)");
 			return;
 		}
@@ -136,7 +154,27 @@ public:
 			sendTo(ac, qq, "https://www.baidu.com/s?wd=" + UrlEncode(message.substr(6)));
 			return;
 		}
-		sendTo(ac, qq, regularifyReply(HttpGet(message)));
+		if (message.substr(0, 6) == "翻译：") {
+			sendTo(ac, qq, "翻译结果为：\n" + XLAT("0", message.substr(6)));
+			return;
+		}
+		if (message.substr(0, 8) == "翻译ce：") {
+			sendTo(ac, qq, "翻译结果为：\n" + XLAT("1", message.substr(8)));
+			return;
+		}
+		if (message.substr(0, 8) == "翻译ec：") {
+			sendTo(ac, qq, "翻译结果为：\n" + XLAT("2", message.substr(8)));
+			return;
+		}
+		if (message.substr(0, 8) == "翻译cj：") {
+			sendTo(ac, qq, "翻译结果为：\n" + XLAT("15", message.substr(8)));
+			return;
+		}
+		if (message.substr(0, 8) == "翻译jc：") {
+			sendTo(ac, qq, "翻译结果为：\n" + XLAT("16", message.substr(8)));
+			return;
+		}
+		sendTo(ac, qq, regularifyReply(AI(message)));
 	}
 
 	bool preProcessGroupMessage(int64_t group, int64_t qq, string message) {
