@@ -35,13 +35,15 @@ string HttpGet(string ip, string port, string url) {
 }
 
 string AI(string message) {
-	string ret = toUnicode(HttpGet("47.107.120.234", "80", "http://api.qingyunke.com/api.php?key=free&appid=0&msg=" + UrlEncode(message)));
-	size_t start = ret.find("content\":\"") + 10, end = ret.length() - 2;
-	return ret.substr(start, end - start);
+	string ret = toUnicode(HttpGet("122.51.67.5", "80", "http://www.titvt.com/ai.php?question=" + UrlEncode(message)));
+	size_t start = 0, end = ret.length() - 8;
+	for (int i = 0; i < 9; i++)
+		start = ret.find('\n', start + 1);
+	return ret.substr(start + 1, end - start);
 }
 
-string XLAT(string type, string message) {
-	string ret = toUnicode(HttpGet("122.51.67.5", "80", "http://www.titvt.com/trans.php?type=" + type + "&text=" + UrlEncode(message)));
+string XLAT(string message) {
+	string ret = toUnicode(HttpGet("122.51.67.5", "80", "http://www.titvt.com/trans.php?type=0&text=" + UrlEncode(message)));
 	size_t start = 0, end = ret.length() - 8;
 	for (int i = 0; i < 9; i++)
 		start = ret.find('\n', start + 1);

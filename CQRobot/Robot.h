@@ -18,14 +18,8 @@ int32_t send(int32_t ac, int64_t group, string message) {
 
 string regularifyReply(string reply) {
 	size_t pos = 0;
-	while ((pos = reply.find("菲菲")) != string::npos)
-		reply.replace(pos, 4, "麦萌萌");
-	pos = 0;
-	while ((pos = reply.find("{face:")) != string::npos)
-		reply.replace(pos, 6, "[CQ:face,id=");
-	pos = 0;
-	while ((pos = reply.find("}")) != string::npos)
-		reply.replace(pos, 1, "]");
+	while ((pos = reply.find("小豪豪")) != string::npos)
+		reply.replace(pos, 6, "麦萌萌");
 	return reply;
 }
 
@@ -49,35 +43,31 @@ public:
 			return;
 		}
 		if (message.substr(0, 10) == "教你百度：") {
-			send(ac, bindedGroup, "http://iwo.im/?q=" + UrlEncode(message.substr(10)));
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n" + "http://iwo.im/?q=" + UrlEncode(message.substr(10)));
+			return;
+		}
+		if (message.substr(0, 9) == "教你百度:") {
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n" + "http://iwo.im/?q=" + UrlEncode(message.substr(9)));
 			return;
 		}
 		if (message.substr(0, 6) == "百度：") {
-			send(ac, bindedGroup, "https://www.baidu.com/s?wd=" + UrlEncode(message.substr(6)));
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n" + "https://www.baidu.com/s?wd=" + UrlEncode(message.substr(6)));
+			return;
+		}
+		if (message.substr(0, 5) == "百度:") {
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n" + "https://www.baidu.com/s?wd=" + UrlEncode(message.substr(5)));
+			return;
+		}
+		if (message.substr(0, 6) == "翻译：") {
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "] 翻译结果为：\n" + XLAT(message.substr(6)));
+			return;
+		}
+		if (message.substr(0, 5) == "翻译:") {
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "] 翻译结果为：\n" + XLAT(message.substr(5)));
 			return;
 		}
 		if (message.substr(0, 22) == "[CQ:at,qq=3340741722] " && message.substr(22).length() != 0) {
 			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n" + regularifyReply(AI(message.substr(22))));
-			return;
-		}
-		if (message.substr(0, 6) == "翻译：") {
-			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "] 翻译结果为：\n" + XLAT("0", message.substr(6)));
-			return;
-		}
-		if (message.substr(0, 8) == "翻译ce：") {
-			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "] 翻译结果为：\n" + XLAT("1", message.substr(8)));
-			return;
-		}
-		if (message.substr(0, 8) == "翻译ec：") {
-			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "] 翻译结果为：\n" + XLAT("2", message.substr(8)));
-			return;
-		}
-		if (message.substr(0, 8) == "翻译cj：") {
-			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "] 翻译结果为：\n" + XLAT("15", message.substr(8)));
-			return;
-		}
-		if (message.substr(0, 8) == "翻译jc：") {
-			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "] 翻译结果为：\n" + XLAT("16", message.substr(8)));
 			return;
 		}
 		if (message.find("[CQ:at,qq=3340741722]") != string::npos)
@@ -150,28 +140,24 @@ public:
 			sendTo(ac, qq, "http://iwo.im/?q=" + UrlEncode(message.substr(10)));
 			return;
 		}
+		if (message.substr(0, 9) == "教你百度:") {
+			sendTo(ac, qq, "http://iwo.im/?q=" + UrlEncode(message.substr(9)));
+			return;
+		}
 		if (message.substr(0, 6) == "百度：") {
 			sendTo(ac, qq, "https://www.baidu.com/s?wd=" + UrlEncode(message.substr(6)));
 			return;
 		}
+		if (message.substr(0, 5) == "百度:") {
+			sendTo(ac, qq, "https://www.baidu.com/s?wd=" + UrlEncode(message.substr(5)));
+			return;
+		}
 		if (message.substr(0, 6) == "翻译：") {
-			sendTo(ac, qq, "翻译结果为：\n" + XLAT("0", message.substr(6)));
+			sendTo(ac, qq, "翻译结果为：\n" + XLAT(message.substr(6)));
 			return;
 		}
-		if (message.substr(0, 8) == "翻译ce：") {
-			sendTo(ac, qq, "翻译结果为：\n" + XLAT("1", message.substr(8)));
-			return;
-		}
-		if (message.substr(0, 8) == "翻译ec：") {
-			sendTo(ac, qq, "翻译结果为：\n" + XLAT("2", message.substr(8)));
-			return;
-		}
-		if (message.substr(0, 8) == "翻译cj：") {
-			sendTo(ac, qq, "翻译结果为：\n" + XLAT("15", message.substr(8)));
-			return;
-		}
-		if (message.substr(0, 8) == "翻译jc：") {
-			sendTo(ac, qq, "翻译结果为：\n" + XLAT("16", message.substr(8)));
+		if (message.substr(0, 5) == "翻译:") {
+			sendTo(ac, qq, "翻译结果为：\n" + XLAT(message.substr(5)));
 			return;
 		}
 		sendTo(ac, qq, regularifyReply(AI(message)));
