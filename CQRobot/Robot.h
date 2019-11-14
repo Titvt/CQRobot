@@ -16,7 +16,7 @@ int32_t send(int32_t ac, int64_t group, string message) {
 	return CQ_sendGroupMsg(ac, group, message.c_str());
 }
 
-string regularifyReply(string reply) {
+string renameReply(string reply) {
 	size_t pos = 0;
 	while ((pos = reply.find("小豪豪")) != string::npos)
 		reply.replace(pos, 6, "麦萌萌");
@@ -67,7 +67,7 @@ public:
 			return;
 		}
 		if (message.substr(0, 22) == "[CQ:at,qq=3340741722] " && message.substr(22).length() != 0) {
-			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n" + regularifyReply(AI(message.substr(22))));
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n" + renameReply(AI(message.substr(22))));
 			return;
 		}
 		if (message.find("[CQ:at,qq=3340741722]") != string::npos)
@@ -160,7 +160,7 @@ public:
 			sendTo(ac, qq, "翻译结果为：\n" + XLAT(message.substr(5)));
 			return;
 		}
-		sendTo(ac, qq, regularifyReply(AI(message)));
+		sendTo(ac, qq, renameReply(AI(message)));
 	}
 
 	bool preProcessGroupMessage(int64_t group, int64_t qq, string message) {
@@ -171,7 +171,7 @@ public:
 					send(ac, group, "麦萌萌小管家上线啦~！\n有事请呼唤我哟~(*^_^*)");
 				}
 				else
-					send(ac, group, "我在呢！,,ԾㅂԾ,,");
+					send(ac, group, "我在呢！/(ㄒoㄒ)/~~");
 				return true;
 			}
 			if (message == "关闭小管家") {
