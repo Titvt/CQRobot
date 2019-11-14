@@ -42,4 +42,7 @@
   <ItemGroup>
     <Library Include="CQP.lib" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="app.json" />
+  </ItemGroup>
 </Project>

@@ -32,6 +32,9 @@
   <ItemGroup>
     <Library Include="CQP.lib" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="app.json" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{F991664D-6D5A-41EE-819C-5EB7BBA901F7}</ProjectGuid>
