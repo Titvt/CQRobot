@@ -6,7 +6,8 @@
 
 using namespace std;
 
-const int64_t OWNER = 1044805408LL, SELF = 3340741722LL, GROUPS[] = { 775980353LL,656723105LL,833484083LL,895595199LL };
+int64_t OWNER, SELF;
+vector<int64_t> GROUPS;
 
 int32_t send(int32_t ac, int64_t group, string message) {
 	return CQ_sendGroupMsg(ac, group, message.c_str());
@@ -81,7 +82,7 @@ public:
 			}
 		}
 		if (message == "麦萌萌") {
-			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n你好呀~\(^0^)/\n我是麦萌萌小管家(￣▽￣～) ！\n咱在群里有以下功能哟~：\n教你百度：xxx\n百度：xxx\n翻译：xxx\n想和我单独聊天的话可以私聊我哦~\n(私聊时上述功能也可用>_<!)\n想在群里和我聊天的话有如下方式：\n开始聊天/结束聊天\n[CQ:at,qq=3340741722] xxx\n咱们愉快相处吧(●'o'●)！");
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n你好呀~\\(^0^)/\n我是麦萌萌小管家(￣▽￣～) ！\n咱在群里有以下功能哟~：\n教你百度：xxx\n百度：xxx\n翻译：xxx\n想和我单独聊天的话可以私聊我哦~\n(私聊时上述功能也可用>_<!)\n想在群里和我聊天的话有如下方式：\n开始聊天/结束聊天\n[CQ:at,qq=3340741722] xxx\n咱们愉快相处吧(●'o'●)！");
 			return;
 		}
 		if (message.substr(0, 10) == "教你百度：") {
@@ -180,8 +181,11 @@ class RobotManager {
 	}
 
 public:
-	RobotManager(int32_t ac) {
+	RobotManager(int32_t ac, int64_t owner, int64_t self, vector<int64_t> groups) {
 		this->ac = ac;
+		OWNER = owner;
+		SELF = self;
+		GROUPS = groups;
 	}
 
 	bool preProcessPrivateMessage(int64_t qq, string message) {
@@ -217,9 +221,9 @@ public:
 				return true;
 			}
 			if (message == "全部开启") {
-				for (int i = 0; i < sizeof(GROUPS) / sizeof(int64_t); i++)
-					if (!isBinded(GROUPS[i]))
-						addRobot(GROUPS[i]);
+				for (auto i = GROUPS.begin(); i < GROUPS.end(); i++)
+					if (!isBinded(*i))
+						addRobot(*i);
 				string str = "操作成功\n已经开启的群如下：";
 				for (auto i = robots.begin(); i < robots.end(); i++)
 					str += "\n" + to_string((*i)->getBindedGroup());
@@ -242,7 +246,7 @@ public:
 
 	void processPrivateMessage(int64_t qq, string message) {
 		if (message == "麦萌萌" || message == "麦萌萌 ") {
-			sendTo(ac, qq, "你好呀~\(^0^)/\n我是麦萌萌小管家(￣▽￣～) ！\n咱在群里有以下功能哟~：\n教你百度：xxx\n百度：xxx\n翻译：xxx\n想和我单独聊天的话可以私聊我哦~\n(私聊时上述功能也可用>_<!)\n想在群里和我聊天的话有如下方式：\n开始聊天/结束聊天\n[CQ:at,qq=3340741722] xxx\n咱们愉快相处吧(●'o'●)！");
+			sendTo(ac, qq, "你好呀~\\(^0^)/\n我是麦萌萌小管家(￣▽￣～) ！\n咱在群里有以下功能哟~：\n教你百度：xxx\n百度：xxx\n翻译：xxx\n想和我单独聊天的话可以私聊我哦~\n(私聊时上述功能也可用>_<!)\n想在群里和我聊天的话有如下方式：\n开始聊天/结束聊天\n[CQ:at,qq=3340741722] xxx\n咱们愉快相处吧(●'o'●)！");
 			return;
 		}
 		if (message.substr(0, 10) == "教你百度：") {

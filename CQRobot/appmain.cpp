@@ -1,3 +1,4 @@
+#include <fstream>
 #include "string"
 #include "cqp.h"
 #include "appmain.h"
@@ -5,7 +6,6 @@
 
 using namespace std;
 
-int ac = -1;
 RobotManager* manager;
 
 CQEVENT(const char*, AppInfo, 0)() {
@@ -13,8 +13,26 @@ CQEVENT(const char*, AppInfo, 0)() {
 }
 
 CQEVENT(int32_t, Initialize, 4)(int32_t AuthCode) {
-	ac = AuthCode;
-	manager = new RobotManager(ac);
+	fstream data;
+	int64_t owner = 1044805408LL, self = 3340741722LL, tmp;
+	vector<int64_t> groups;
+	data.open("owner.txt");
+	if (data.peek() != EOF)
+		data >> owner;
+	data.close();
+	data.open("self.txt");
+	if (data.peek() != EOF)
+		data >> self;
+	data.close();
+	data.open("groups.txt");
+	while (data.peek() != EOF) {
+		data >> tmp;
+		groups.push_back(tmp);
+	}
+	data.close();
+	if (groups.empty())
+		groups.push_back(775980353LL);
+	manager = new RobotManager(AuthCode, owner, self, groups);
 	return 0;
 }
 

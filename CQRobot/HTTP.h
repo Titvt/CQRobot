@@ -37,7 +37,7 @@ string HttpGet(string ip, string port, string url) {
 }
 
 string AI(string message) {
-	string ret = toUnicode(HttpGet("122.51.67.5", "80", "http://www.titvt.com/ai.php?question=" + UrlEncode(message)));
+	string ret = toUnicode(HttpGet("122.51.67.5", "80", "http://ai.titvt.com/?question=" + UrlEncode(message)));
 	size_t start = 0, end = ret.length() - 8;
 	for (int i = 0; i < 9; i++)
 		start = ret.find('\n', start + 1);
@@ -45,7 +45,7 @@ string AI(string message) {
 }
 
 string XLAT(string message) {
-	string ret = toUnicode(HttpGet("122.51.67.5", "80", "http://www.titvt.com/xlat.php?text=" + UrlEncode(message)));
+	string ret = toUnicode(HttpGet("122.51.67.5", "80", "http://xlat.titvt.com/?text=" + UrlEncode(message)));
 	size_t start = 0, end = ret.length() - 8;
 	for (int i = 0; i < 9; i++)
 		start = ret.find('\n', start + 1);
