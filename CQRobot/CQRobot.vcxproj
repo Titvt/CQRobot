@@ -34,6 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.json" />
+    <None Include="pack\com.titvt.CQRobot.cpk" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
