@@ -6,7 +6,7 @@
 
 using namespace std;
 
-const int64_t OWNER = 1044805408LL, SELF = 3340741722LL;
+const int64_t OWNER = 1044805408LL, SELF = 3340741722LL, GROUPS[] = { 775980353LL,656723105LL,833484083LL,895595199LL };
 
 int32_t send(int32_t ac, int64_t group, string message) {
 	return CQ_sendGroupMsg(ac, group, message.c_str());
@@ -20,14 +20,17 @@ string renameReply(string reply) {
 	size_t pos = 0;
 	while ((pos = reply.find("小豪豪")) != string::npos)
 		reply.replace(pos, 6, "麦萌萌");
+	pos = 0;
+	while ((pos = reply.find("豪豪")) != string::npos)
+		reply.replace(pos, 4, "麦萌萌");
 	return reply;
 }
 
 string removeAt(string str) {
 	size_t start = 0, end;
 	while ((start = str.find("[CQ:at,qq=")) != string::npos) {
-		end = str.find("]", start);
-		str.replace(start, end - start, "");
+		end = str.find("] ", start);
+		str.replace(start, end - start + 2, "");
 	}
 	return str;
 }
@@ -78,7 +81,7 @@ public:
 			}
 		}
 		if (message == "麦萌萌") {
-			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n你好呀~\(^0^)/\n我是麦萌萌小管家(￣▽￣～) ！\n咱在群里有以下功能哟~：\n教你百度：xxx\n百度：xxx\n翻译：xxx\n想和我单独聊天的话可以私聊我哦~\n(私聊时上述功能也可用>_<!)\n想在群里和我聊天的话有如下方式：\n开始聊天/结束聊天\n[CQ:at,qq=3340741722] xxx\n咱们愉快相处吧(●'◡'●)！");
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n你好呀~\(^0^)/\n我是麦萌萌小管家(￣▽￣～) ！\n咱在群里有以下功能哟~：\n教你百度：xxx\n百度：xxx\n翻译：xxx\n想和我单独聊天的话可以私聊我哦~\n(私聊时上述功能也可用>_<!)\n想在群里和我聊天的话有如下方式：\n开始聊天/结束聊天\n[CQ:at,qq=3340741722] xxx\n咱们愉快相处吧(●'o'●)！");
 			return;
 		}
 		if (message.substr(0, 10) == "教你百度：") {
@@ -119,6 +122,7 @@ public:
 				send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n叫我干啥(⊙o⊙)？");
 			else
 				send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n" + renameReply(AI(str)));
+			return;
 		}
 		if (message == "开始聊天") {
 			if (isChatter(qq)) {
@@ -212,13 +216,33 @@ public:
 					sendTo(ac, OWNER, str);
 				return true;
 			}
+			if (message == "全部开启") {
+				for (int i = 0; i < sizeof(GROUPS) / sizeof(int64_t); i++)
+					if (!isBinded(GROUPS[i]))
+						addRobot(GROUPS[i]);
+				string str = "操作成功\n已经开启的群如下：";
+				for (auto i = robots.begin(); i < robots.end(); i++)
+					str += "\n" + to_string((*i)->getBindedGroup());
+				if (str == "操作成功\n已经开启的群如下：")
+					sendTo(ac, OWNER, "操作成功\n目前没有开启的群");
+				else
+					sendTo(ac, OWNER, str);
+				return true;
+			}
+			if (message == "全部关闭") {
+				for (auto i = robots.begin(); i < robots.end(); i++)
+					free(*i);
+				robots.clear();
+				sendTo(ac, OWNER, "操作成功");
+				return true;
+			}
 		}
 		return false;
 	}
 
 	void processPrivateMessage(int64_t qq, string message) {
 		if (message == "麦萌萌" || message == "麦萌萌 ") {
-			sendTo(ac, qq, "你好呀~\(^0^)/\n我是麦萌萌小管家(￣▽￣～) ！\n咱在群里有以下功能哟~：\n教你百度：xxx\n百度：xxx\n翻译：xxx\n想和我单独聊天的话可以私聊我哦~\n(私聊时上述功能也可用>_<!)\n想在群里和我聊天的话有如下方式：\n开始聊天/结束聊天\n[CQ:at,qq=3340741722] xxx\n咱们愉快相处吧(●'◡'●)！");
+			sendTo(ac, qq, "你好呀~\(^0^)/\n我是麦萌萌小管家(￣▽￣～) ！\n咱在群里有以下功能哟~：\n教你百度：xxx\n百度：xxx\n翻译：xxx\n想和我单独聊天的话可以私聊我哦~\n(私聊时上述功能也可用>_<!)\n想在群里和我聊天的话有如下方式：\n开始聊天/结束聊天\n[CQ:at,qq=3340741722] xxx\n咱们愉快相处吧(●'o'●)！");
 			return;
 		}
 		if (message.substr(0, 10) == "教你百度：") {

@@ -21,6 +21,8 @@ string HttpGet(string ip, string port, string url) {
 	WSADATA ws;
 	WSAStartup(word, &ws);
 	SOCKET sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	int timeout = 2000;
+	setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
 	sockaddr_in clientAddr;
 	clientAddr.sin_family = AF_INET;
 	clientAddr.sin_port = htons(atoi(port.c_str()));
@@ -43,7 +45,7 @@ string AI(string message) {
 }
 
 string XLAT(string message) {
-	string ret = toUnicode(HttpGet("122.51.67.5", "80", "http://www.titvt.com/trans.php?type=0&text=" + UrlEncode(message)));
+	string ret = toUnicode(HttpGet("122.51.67.5", "80", "http://www.titvt.com/xlat.php?text=" + UrlEncode(message)));
 	size_t start = 0, end = ret.length() - 8;
 	for (int i = 0; i < 9; i++)
 		start = ret.find('\n', start + 1);
