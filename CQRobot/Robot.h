@@ -200,8 +200,28 @@ public:
 					sendTo(ac, OWNER, "已经开启");
 				return true;
 			}
+			if (message.substr(0, 11) == "开启小管家:") {
+				int64_t group = stoll(message.substr(11));
+				if (!isBinded(group)) {
+					addRobot(group);
+					sendTo(ac, OWNER, "开启成功");
+				}
+				else
+					sendTo(ac, OWNER, "已经开启");
+				return true;
+			}
 			if (message.substr(0, 12) == "关闭小管家：") {
 				int64_t group = stoll(message.substr(12));
+				if (isBinded(group)) {
+					deleteRobot(group);
+					sendTo(ac, OWNER, "关闭成功");
+				}
+				else
+					sendTo(ac, OWNER, "已经关闭");
+				return true;
+			}
+			if (message.substr(0, 11) == "关闭小管家:") {
+				int64_t group = stoll(message.substr(11));
 				if (isBinded(group)) {
 					deleteRobot(group);
 					sendTo(ac, OWNER, "关闭成功");
