@@ -2,8 +2,8 @@
   "ret": 1,
   "apiver": 9,
   "name": "麦萌萌小管家",
-  "version": "3.0.0",
-  "version_id": 3,
+  "version": "4.0.0",
+  "version_id": 4,
   "author": "古月浪子",
   "description": "酷Q机器人——麦萌萌小管家",
   "event": [
@@ -44,6 +44,7 @@
   ],
   "auth": [
     101,
-    106
+    106,
+    121
   ]
 }

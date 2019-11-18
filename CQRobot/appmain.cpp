@@ -13,26 +13,29 @@ CQEVENT(const char*, AppInfo, 0)() {
 }
 
 CQEVENT(int32_t, Initialize, 4)(int32_t AuthCode) {
+	srand(AuthCode);
 	fstream data;
-	int64_t owner = 1044805408LL, self = 3340741722LL, tmp;
-	vector<int64_t> groups;
-	data.open("owner.txt");
+	bool autoStart = false;
+	int64_t owner = 1044805408LL, self = 3340741722LL;
+	autoGroup group;
+	vector<autoGroup> groups;
+	data.open("CQRobot/owner.txt");
 	if (data.peek() != EOF)
 		data >> owner;
 	data.close();
-	data.open("self.txt");
+	data.open("CQRobot/self.txt");
 	if (data.peek() != EOF)
 		data >> self;
 	data.close();
-	data.open("groups.txt");
+	data.open("CQRobot/groups.txt");
+	if (data.peek() != EOF)
+		data >> autoStart;
 	while (data.peek() != EOF) {
-		data >> tmp;
-		groups.push_back(tmp);
+		data >> group.group >> group.allowRepeat;
+		groups.push_back(group);
 	}
 	data.close();
-	if (groups.empty())
-		groups.push_back(775980353LL);
-	manager = new RobotManager(AuthCode, owner, self, groups);
+	manager = new RobotManager(AuthCode, owner, self, groups, autoStart);
 	return 0;
 }
 

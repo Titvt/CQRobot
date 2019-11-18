@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="pack">
-      <UniqueIdentifier>{3ad09b69-23c1-4d42-b89e-76a1b6545926}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="appmain.cpp">
@@ -47,8 +44,5 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.json" />
-    <None Include="pack\com.titvt.CQRobot.cpk">
-      <Filter>pack</Filter>
-    </None>
   </ItemGroup>
 </Project>
