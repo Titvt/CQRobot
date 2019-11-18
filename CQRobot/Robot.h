@@ -1,6 +1,7 @@
 ﻿#include <string>
 #include <vector>
 #include <WS2tcpip.h>
+#include <ctime>
 #include "UrlEncode.h"
 #include "HTTP.h"
 
@@ -97,6 +98,7 @@ public:
 			}
 			if (message.substr(0, 18) == "关小黑屋[CQ:at,qq=") {
 				int64_t q = stoll(message.substr(18, message.length() - 20));
+				srand(time(0));
 				int duration = rand() % 1440 + 1;
 				CQ_setGroupBan(ac, bindedGroup, q, duration * 60);
 				send(ac, bindedGroup, "好了你不要说了.jpg");
@@ -156,6 +158,7 @@ public:
 			return;
 		}
 		if (message == "睡觉") {
+			srand(time(0));
 			int duration = rand() % 1440 + 1;
 			CQ_setGroupBan(ac, bindedGroup, qq, duration * 60);
 			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\nお休み (￣▽￣*)~");
@@ -200,6 +203,7 @@ public:
 		if (!allowRepeat) {
 			if (message == repeatText) {
 				if (repeatNumber == 2) {
+					srand(time(0));
 					int duration = rand() % 1440 + 1;
 					CQ_setGroupBan(ac, bindedGroup, qq, duration * 60);
 					send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n哼哼！复读的下场就是被禁言" + to_string(duration) + "分钟 (￣▽￣*)！");

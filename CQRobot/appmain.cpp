@@ -13,7 +13,6 @@ CQEVENT(const char*, AppInfo, 0)() {
 }
 
 CQEVENT(int32_t, Initialize, 4)(int32_t AuthCode) {
-	srand(AuthCode);
 	fstream data;
 	bool autoStart = false;
 	int64_t owner = 1044805408LL, self = 3340741722LL;
