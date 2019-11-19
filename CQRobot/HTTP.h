@@ -38,16 +38,16 @@ string HttpGet(string ip, string port, string url) {
 
 string AI(string message) {
 	string ret = toUnicode(HttpGet("122.51.67.5", "80", "http://ai.titvt.com/?question=" + UrlEncode(message)));
-	size_t start = 0, end = ret.length() - 8;
-	for (int i = 0; i < 9; i++)
-		start = ret.find('\n', start + 1);
-	return ret.substr(start + 1, end - start);
+	size_t start = ret.find("{[("), end = ret.find(")]}");
+	if (start == string::npos || end == string::npos)
+		return "emmm...";
+	return ret.substr(start + 3, end - start - 3);
 }
 
 string XLAT(string message) {
 	string ret = toUnicode(HttpGet("122.51.67.5", "80", "http://xlat.titvt.com/?text=" + UrlEncode(message)));
-	size_t start = 0, end = ret.length() - 8;
-	for (int i = 0; i < 9; i++)
-		start = ret.find('\n', start + 1);
-	return ret.substr(start + 1, end - start);
+	size_t start = ret.find("{[("), end = ret.find(")]}");
+	if (start == string::npos || end == string::npos)
+		return "";
+	return ret.substr(start + 3, end - start - 3);
 }

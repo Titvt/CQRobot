@@ -324,11 +324,7 @@ public:
 				sendTo(ac, qq, "翻译结果为：\n" + str);
 			return;
 		}
-		string str = renameReply(AI(message));
-		if (str == "")
-			sendTo(ac, qq, "emmm...");
-		else
-			sendTo(ac, qq, str);
+		sendTo(ac, qq, renameReply(AI(message)));
 	}
 
 	bool preProcessGroupMessage(int64_t group, int64_t qq, string message) {

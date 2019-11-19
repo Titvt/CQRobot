@@ -18,15 +18,15 @@ CQEVENT(int32_t, Initialize, 4)(int32_t AuthCode) {
 	int64_t owner = 1044805408LL, self = 3340741722LL;
 	autoGroup group;
 	vector<autoGroup> groups;
-	data.open("CQRobot/owner.txt");
+	data.open("./CQRobot/owner.txt", ios::in);
 	if (data.peek() != EOF)
 		data >> owner;
 	data.close();
-	data.open("CQRobot/self.txt");
+	data.open("./CQRobot/self.txt", ios::in);
 	if (data.peek() != EOF)
 		data >> self;
 	data.close();
-	data.open("CQRobot/groups.txt");
+	data.open("./CQRobot/groups.txt", ios::in);
 	if (data.peek() != EOF)
 		data >> autoStart;
 	while (data.peek() != EOF) {
