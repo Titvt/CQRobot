@@ -45,26 +45,68 @@ string removeAt(string str) {
 class Robot {
 	int32_t ac;
 	int64_t bindedGroup;
-	vector<int64_t> chatter;
+	vector<int64_t> chatters;
 	bool allowRepeat;
 	int repeatNumber = 0;
 	string repeatText = "";
+	vector<int64_t> admins;
+	bool enableAI = true;
+	bool enableDUI = false;
+	vector<int64_t> duiers;
 
 	bool isChatter(int64_t qq) {
-		for (auto i = chatter.begin(); i < chatter.end(); i++)
+		for (auto i = chatters.begin(); i < chatters.end(); i++)
 			if ((*i) == qq)
 				return true;
 		return false;
 	}
 
 	void addChatter(int64_t qq) {
-		chatter.push_back(qq);
+		chatters.push_back(qq);
 	}
 
 	void deleteChatter(int64_t qq) {
-		for (auto i = chatter.begin(); i < chatter.end(); i++)
-			if ((*i) == qq)
-				chatter.erase(i);
+		for (auto i = chatters.begin(); i < chatters.end(); i++)
+			if (*i == qq)
+				chatters.erase(i);
+	}
+
+	bool isAdmin(int64_t qq) {
+		if (qq == OWNER)
+			return true;
+		for (auto i = admins.begin(); i < admins.end(); i++) {
+			if (*i == qq)
+				return true;
+		}
+		return false;
+	}
+
+	void addAdmin(int64_t qq) {
+		admins.push_back(qq);
+	}
+
+	void deleteAdmin(int64_t qq) {
+		for (auto i = admins.begin(); i < admins.end(); i++)
+			if (*i == qq)
+				admins.erase(i);
+	}
+
+	bool isDuier(int64_t qq) {
+		for (auto i = duiers.begin(); i < duiers.end(); i++) {
+			if (*i == qq)
+				return true;
+		}
+		return false;
+	}
+
+	void addDuier(int64_t qq) {
+		duiers.push_back(qq);
+	}
+
+	void deleteDuier(int64_t qq) {
+		for (auto i = duiers.begin(); i < duiers.end(); i++)
+			if (*i == qq)
+				duiers.erase(i);
 	}
 
 public:
@@ -84,23 +126,37 @@ public:
 
 	void processMessage(int64_t qq, string message) {
 		if (qq == OWNER) {
-			if (message.substr(0, 22) == "强制开始聊天[CQ:at,qq=") {
-				int64_t q = stoll(message.substr(22, message.length() - 24));
-				if (!isChatter(q))
-					addChatter(q);
+			if (message.substr(0, 14) == "提权[CQ:at,qq=") {
+				int64_t q = stoll(message.substr(14, message.length() - 16));
+				if (!isAdmin(q))
+					addAdmin(q);
 				return;
 			}
-			if (message.substr(0, 22) == "强制结束聊天[CQ:at,qq=") {
-				int64_t q = stoll(message.substr(22, message.length() - 24));
-				if (isChatter(q))
-					deleteChatter(q);
+			if (message.substr(0, 14) == "废掉[CQ:at,qq=") {
+				int64_t q = stoll(message.substr(14, message.length() - 16));
+				if (isAdmin(q))
+					deleteAdmin(q);
 				return;
+			}
+		}
+		if (isAdmin(qq)) {
+			if (message == "开启AI" || message == "开启ai") {
+				enableAI = true;
+			}
+			if (message == "关闭AI" || message == "关闭ai") {
+				enableAI = false;
+			}
+			if (message == "开启对线") {
+				enableDUI = true;
+			}
+			if (message == "关闭对线") {
+				enableDUI = false;
 			}
 			if (message.substr(0, 18) == "关小黑屋[CQ:at,qq=") {
 				int64_t q = stoll(message.substr(18, message.length() - 20));
 				srand(time(0));
-				int duration = rand() % 1440 + 1;
-				CQ_setGroupBan(ac, bindedGroup, q, duration * 60);
+				int thousand = rand() % 2, hundred = rand() % 10, ten = rand() % 10, one = rand() % 10;
+				CQ_setGroupBan(ac, bindedGroup, qq, (thousand * 1000 + hundred * 100 + ten * 10 + one + 1) * 60);
 				send(ac, bindedGroup, "好了你不要说了.jpg");
 				return;
 			}
@@ -122,7 +178,7 @@ public:
 			}
 		}
 		if (message == "麦萌萌") {
-			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n你好呀~\\(^0^)/\n我是麦萌萌小管家(￣▽￣～) ！\n咱在群里有以下功能哟~：\n教你百度：xxx\n百度：xxx\n翻译：xxx\n想和我单独聊天的话可以私聊我哦~\n(私聊时上述功能也可用>_<!)\n想在群里和我聊天的话有如下方式：\n开始聊天/结束聊天\n[CQ:at,qq=" + to_string(SELF) + "] xxx\n想睡觉的话可以发送\"睡觉\"嗷~~\n咱们愉快相处吧(●'o'●)！");
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n你好呀~\\(^0^)/\n我是麦萌萌小管家(￣▽￣～) ！\n咱在群里有以下功能哟~：\n教你百度：xxx\n百度：xxx\n翻译：xxx\n想在群里和我聊天的话有如下方式：\n开始聊天/结束聊天\n[CQ:at,qq=" + to_string(SELF) + "] xxx\n想和我对线的话有如下方式：\n来对线/我怂了\n对线状态支持@，不可与聊天状态并存\n想睡觉的话可以发送\"睡觉\"嗷~~\n咱们愉快相处吧(●'o'●)！");
 			return;
 		}
 		if (message.substr(0, 10) == "教你百度：") {
@@ -159,12 +215,50 @@ public:
 		}
 		if (message == "睡觉") {
 			srand(time(0));
-			int duration = rand() % 1440 + 1;
-			CQ_setGroupBan(ac, bindedGroup, qq, duration * 60);
+			int thousand = rand() % 2, hundred = rand() % 10, ten = rand() % 10, one = rand() % 10;
+			CQ_setGroupBan(ac, bindedGroup, qq, (thousand * 1000 + hundred * 100 + ten * 10 + one + 1) * 60);
 			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\nお休み (￣▽￣*)~");
 			return;
 		}
 		if (message.find("[CQ:at,qq=" + to_string(SELF) + "]") != string::npos) {
+			if (enableDUI && isDuier(qq)) {
+				send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n" + DUI());
+				return;
+			}
+			if (enableAI) {
+				string str = removeAt(message);
+				if (str == "")
+					send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n叫我干啥(⊙o⊙)？");
+				else
+					send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n" + renameReply(AI(str)));
+				return;
+			}
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n叫我干啥(⊙o⊙)？");
+			return;
+		}
+		if (enableAI && message == "开始聊天" && !isChatter(qq)) {
+			addChatter(qq);
+			deleteDuier(qq);
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n开始愉快的聊天吧~！");
+			return;
+		}
+		if (enableAI && message == "结束聊天" && isChatter(qq)) {
+			deleteChatter(qq);
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n下次再聊吧~！");
+			return;
+		}
+		if (enableDUI && message == "来对线" && !isDuier(qq)) {
+			addDuier(qq);
+			deleteChatter(qq);
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n来啊！谁怕谁！");
+			return;
+		}
+		if (enableDUI && message == "我怂了" && isDuier(qq)) {
+			deleteDuier(qq);
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n知道我的厉害了吧！");
+			return;
+		}
+		if (enableAI && isChatter(qq)) {
 			string str = removeAt(message);
 			if (str == "")
 				send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n叫我干啥(⊙o⊙)？");
@@ -172,41 +266,17 @@ public:
 				send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n" + renameReply(AI(str)));
 			return;
 		}
-		if (message == "开始聊天") {
-			if (isChatter(qq)) {
-				send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n咱们已经在聊天啦~！");
-				return;
-			}
-			else {
-				addChatter(qq);
-				send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n开始愉快的聊天吧~！");
-				return;
-			}
-		}
-		if (message == "结束聊天") {
-			if (!isChatter(qq))
-				return;
-			else {
-				deleteChatter(qq);
-				send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n下次再聊吧~！");
-				return;
-			}
-		}
-		if (isChatter(qq)) {
-			string str = removeAt(message);
-			if (str == "")
-				send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n叫我干啥(⊙o⊙)？");
-			else
-				send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n" + renameReply(AI(str)));
+		if (enableDUI && isDuier(qq)) {
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n" + DUI());
 			return;
 		}
 		if (!allowRepeat) {
 			if (message == repeatText) {
 				if (repeatNumber == 2) {
 					srand(time(0));
-					int duration = rand() % 1440 + 1;
-					CQ_setGroupBan(ac, bindedGroup, qq, duration * 60);
-					send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n哼哼！复读的下场就是被禁言" + to_string(duration) + "分钟 (￣▽￣*)！");
+					int thousand = rand() % 2, hundred = rand() % 10, ten = rand() % 10, one = rand() % 10;
+					CQ_setGroupBan(ac, bindedGroup, qq, (thousand * 1000 + hundred * 100 + ten * 10 + one + 1) * 60);
+					send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n哼哼！复读的下场就是被禁言" + to_string(thousand * 1000 + hundred * 100 + ten * 10 + one + 1) + "分钟 (￣▽￣*)！");
 				}
 				else
 					repeatNumber++;
@@ -257,7 +327,7 @@ public:
 		}
 	}
 
-	bool preProcessPrivateMessage(int64_t qq, string message) {
+	void privateMessage(int64_t qq, string message) {
 		if (qq == OWNER) {
 			if (message == "查询列表") {
 				string str = "已经开启的群如下：";
@@ -267,64 +337,24 @@ public:
 					sendTo(ac, OWNER, "目前没有开启的群");
 				else
 					sendTo(ac, OWNER, str);
-				return true;
+				return;
 			}
 			if (message == "全部开启") {
 				for (auto i = GROUPS.begin(); i < GROUPS.end(); i++)
 					if (!isBinded((*i).group))
 						addRobot((*i).group, (*i).allowRepeat);
 				sendTo(ac, OWNER, "操作成功");
-				return true;
+				return;
 			}
 			if (message == "全部关闭") {
 				for (auto i = robots.begin(); i < robots.end(); i++)
 					free(*i);
 				robots.clear();
 				sendTo(ac, OWNER, "操作成功");
-				return true;
+				return;
 			}
 		}
-		return false;
-	}
-
-	void processPrivateMessage(int64_t qq, string message) {
-		if (message == "麦萌萌" || message == "麦萌萌 ") {
-			sendTo(ac, qq, "你好呀~\\(^0^)/\n我是麦萌萌小管家(￣▽￣～) ！\n咱在群里有以下功能哟~：\n教你百度：xxx\n百度：xxx\n翻译：xxx\n想和我单独聊天的话可以私聊我哦~\n(私聊时上述功能也可用>_<!)\n想在群里和我聊天的话有如下方式：\n开始聊天/结束聊天\n[CQ:at,qq=" + to_string(SELF) + "] xxx\n咱们愉快相处吧(●'o'●)！");
-			return;
-		}
-		if (message.substr(0, 10) == "教你百度：") {
-			sendTo(ac, qq, "http://iwo.im/?q=" + UrlEncode(message.substr(10)));
-			return;
-		}
-		if (message.substr(0, 9) == "教你百度:") {
-			sendTo(ac, qq, "http://iwo.im/?q=" + UrlEncode(message.substr(9)));
-			return;
-		}
-		if (message.substr(0, 6) == "百度：") {
-			sendTo(ac, qq, "https://www.baidu.com/s?wd=" + UrlEncode(message.substr(6)));
-			return;
-		}
-		if (message.substr(0, 5) == "百度:") {
-			sendTo(ac, qq, "https://www.baidu.com/s?wd=" + UrlEncode(message.substr(5)));
-			return;
-		}
-		if (message.substr(0, 6) == "翻译：") {
-			string str = XLAT(message.substr(6));
-			if (str == "")
-				sendTo(ac, qq, "emmm...");
-			else
-				sendTo(ac, qq, "翻译结果为：\n" + str);
-			return;
-		}
-		if (message.substr(0, 5) == "翻译:") {
-			string str = XLAT(message.substr(5));
-			if (str == "")
-				sendTo(ac, qq, "emmm...");
-			else
-				sendTo(ac, qq, "翻译结果为：\n" + str);
-			return;
-		}
-		sendTo(ac, qq, renameReply(AI(message)));
+		sendTo(ac, qq, "你好呀~\\(^0^)/\n我是麦萌萌小管家(￣▽￣～) ！\n咱们愉快相处吧(●'o'●)！");
 	}
 
 	bool preProcessGroupMessage(int64_t group, int64_t qq, string message) {

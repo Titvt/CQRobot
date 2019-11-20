@@ -47,8 +47,7 @@ CQEVENT(int32_t, __eventExit, 0)() {
 }
 
 CQEVENT(int32_t, __eventPrivateMsg, 24)(int32_t subType, int32_t msgId, int64_t fromQQ, const char *msg, int32_t font) {
-	if (!(manager->preProcessPrivateMessage(fromQQ, string(msg))))
-		manager->processPrivateMessage(fromQQ, string(msg));
+	manager->privateMessage(fromQQ, string(msg));
 	return EVENT_BLOCK;
 }
 

@@ -51,3 +51,11 @@ string XLAT(string message) {
 		return "";
 	return ret.substr(start + 3, end - start - 3);
 }
+
+string DUI() {
+	string ret = toUnicode(HttpGet("122.51.67.5", "80", "http://dui.titvt.com/"));
+	size_t start = ret.find("{[("), end = ret.find(")]}");
+	if (start == string::npos || end == string::npos)
+		return "";
+	return ret.substr(start + 3, end - start - 3);
+}
