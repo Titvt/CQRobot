@@ -178,7 +178,7 @@ public:
 			}
 		}
 		if (message == "麦萌萌") {
-			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n你好呀~\\(^0^)/\n我是麦萌萌小管家(￣▽￣～) ！\n咱在群里有以下功能哟~：\n教你百度：xxx\n百度：xxx\n翻译：xxx\n想在群里和我聊天的话有如下方式：\n开始聊天/结束聊天\n[CQ:at,qq=" + to_string(SELF) + "] xxx\n想和我对线的话有如下方式：\n来对线/我怂了\n对线状态支持@，不可与聊天状态并存\n想睡觉的话可以发送\"睡觉\"嗷~~\n咱们愉快相处吧(●'o'●)！");
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n你好呀~\\(^0^)/\n我是麦萌萌小管家(￣▽￣～) ！\n咱在群里有以下功能哟~：\n教你百度：xxx\n百度：xxx\n翻译：xxx\n想和我聊天的话有如下方式：\n开始聊天/结束聊天\n[CQ:at,qq=" + to_string(SELF) + "] xxx\n想和我对线的话有如下方式：\n来对线/我怂了\n对线状态也支持@，不可与聊天状态并存\n想睡觉的话可以发送\"睡觉\"嗷~~\n咱们愉快相处吧(●'o'●)！");
 			return;
 		}
 		if (message.substr(0, 10) == "教你百度：") {
