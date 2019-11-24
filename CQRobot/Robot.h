@@ -42,6 +42,37 @@ string removeAt(string str) {
 	return str;
 }
 
+string engu(string str) {
+	string ret;
+	for (int ch = 0; ch < str.length(); ch++)
+		for (int i = 7; i >= 0; i--)
+			if (str[ch] & 1 << i)
+				ret += "~";
+			else
+				ret += "咕";
+	return ret;
+}
+
+string degu(string str) {
+	string ret;
+	char ch = '\0';
+	int n = 7;
+	for (int i = 0; i < str.length(); i++) {
+		if (str[i] == '~')
+			ch |= 1 << n;
+		else
+			i++;
+		if (n == 0) {
+			ret += ch;
+			ch = '\0';
+			n = 7;
+		}
+		else
+			n--;
+	}
+	return ret;
+}
+
 class Robot {
 	int32_t ac;
 	int64_t bindedGroup;
@@ -178,7 +209,7 @@ public:
 			}
 		}
 		if (message == "麦萌萌") {
-			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n你好呀~\\(^0^)/\n我是麦萌萌小管家(￣▽￣～) ！\n咱在群里有以下功能哟~：\n教你百度：xxx\n百度：xxx\n翻译：xxx\n想和我聊天的话有如下方式：\n开始聊天/结束聊天\n[CQ:at,qq=" + to_string(SELF) + "] xxx\n想和我对线的话有如下方式：\n来对线/我怂了\n对线状态也支持@，不可与聊天状态并存\n想睡觉的话可以发送\"睡觉\"嗷~~\n咱们愉快相处吧(●'o'●)！");
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n你好呀~\\(^0^)/\n我是麦萌萌小管家(￣▽￣～) ！\n咱在群里有以下功能哟~：\n教你百度：xxx\n百度：xxx\n翻译：xxx\n咕咕加密：xxx\n咕咕解密：xxx\n想和我聊天的话有如下方式：\n开始聊天/结束聊天\n[CQ:at,qq=" + to_string(SELF) + "] xxx\n想和我对线的话有如下方式：\n来对线/我怂了\n对线状态也支持@，不可与聊天状态并存\n想睡觉的话可以发送\"睡觉\"嗷~~\n咱们愉快相处吧(●'o'●)！");
 			return;
 		}
 		if (message.substr(0, 10) == "教你百度：") {
@@ -211,6 +242,22 @@ public:
 				send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "] emmm...");
 			else
 				send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "] 翻译结果为：\n" + str);
+			return;
+		}
+		if (message.substr(0, 10) == "咕咕加密：") {
+			send(ac, bindedGroup, engu(message.substr(10)));
+			return;
+		}
+		if (message.substr(0, 9) == "咕咕加密:") {
+			send(ac, bindedGroup, engu(message.substr(9)));
+			return;
+		}
+		if (message.substr(0, 10) == "咕咕解密：") {
+			send(ac, bindedGroup, degu(message.substr(10)));
+			return;
+		}
+		if (message.substr(0, 9) == "咕咕解密:") {
+			send(ac, bindedGroup, degu(message.substr(9)));
 			return;
 		}
 		if (message == "睡觉") {
