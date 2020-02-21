@@ -37,7 +37,7 @@ string HttpGet(string ip, string port, string url) {
 }
 
 string AI(string message) {
-	string ret = toUnicode(HttpGet("122.51.67.5", "80", "http://ai.titvt.com/?question=" + UrlEncode(message)));
+	string ret = toUnicode(HttpGet("122.51.67.5", "80", "http://api.titvt.com/ai.php?question=" + UrlEncode(message)));
 	size_t start = ret.find("{[("), end = ret.find(")]}");
 	if (start == string::npos || end == string::npos)
 		return "emmm...";
@@ -45,7 +45,7 @@ string AI(string message) {
 }
 
 string XLAT(string message) {
-	string ret = toUnicode(HttpGet("122.51.67.5", "80", "http://xlat.titvt.com/?text=" + UrlEncode(message)));
+	string ret = toUnicode(HttpGet("122.51.67.5", "80", "http://api.titvt.com/xlat.php?text=" + UrlEncode(message)));
 	size_t start = ret.find("{[("), end = ret.find(")]}");
 	if (start == string::npos || end == string::npos)
 		return "";
@@ -53,7 +53,7 @@ string XLAT(string message) {
 }
 
 string DUI() {
-	string ret = toUnicode(HttpGet("122.51.67.5", "80", "http://dui.titvt.com/"));
+	string ret = toUnicode(HttpGet("122.51.67.5", "80", "http://api.titvt.com/dui.php"));
 	size_t start = ret.find("{[("), end = ret.find(")]}");
 	if (start == string::npos || end == string::npos)
 		return "";

@@ -29,13 +29,13 @@
     <ClInclude Include="cqp.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Robot.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="UrlEncode.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="HTTP.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Robot.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
