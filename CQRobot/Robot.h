@@ -219,9 +219,11 @@ public:
 			}
 			if (message.substr(0, 18) == "关小黑屋[CQ:at,qq=") {
 				int64_t q = stoll(message.substr(18, message.length() - 20));
+				if (q == OWNER)
+					return;
 				srand(time(0));
 				int thousand = rand() % 2, hundred = rand() % 10, ten = rand() % 10, one = rand() % 10;
-				CQ_setGroupBan(ac, bindedGroup, qq, (thousand * 1000 + hundred * 100 + ten * 10 + one + 1) * 60);
+				CQ_setGroupBan(ac, bindedGroup, q, (thousand * 1000 + hundred * 100 + ten * 10 + one + 1) * 60);
 				send(ac, bindedGroup, "好了你不要说了.jpg");
 				return;
 			}
@@ -327,6 +329,8 @@ public:
 			return;
 		}
 		if (message == "睡觉") {
+			if (qq == OWNER)
+				return;
 			srand(time(0));
 			int thousand = rand() % 2, hundred = rand() % 10, ten = rand() % 10, one = rand() % 10;
 			CQ_setGroupBan(ac, bindedGroup, qq, (thousand * 1000 + hundred * 100 + ten * 10 + one + 1) * 60);
@@ -393,6 +397,8 @@ public:
 		if (!allowRepeat) {
 			if (message == repeatText) {
 				if (repeatNumber == 2) {
+					if (qq == OWNER)
+						return;
 					srand(time(0));
 					int thousand = rand() % 2, hundred = rand() % 10, ten = rand() % 10, one = rand() % 10;
 					CQ_setGroupBan(ac, bindedGroup, qq, (thousand * 1000 + hundred * 100 + ten * 10 + one + 1) * 60);
