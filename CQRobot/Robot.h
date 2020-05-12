@@ -1,11 +1,19 @@
 ﻿#include <string>
+#include <fstream>
 #include <vector>
-#include <WS2tcpip.h>
 #include <ctime>
 #include <io.h>
 #include <thread>
+#include <regex>
+#include <WS2tcpip.h>
+#include "cqp.h"
 #include "UrlEncode.h"
 #include "HTTP.h"
+#include "Pica.h"
+#include "libssh2.h"
+
+#pragma comment(lib, "ws2_32.lib")
+#pragma comment(lib, "libssh2.lib")
 
 using namespace std;
 
@@ -102,6 +110,26 @@ void timer(int32_t ac, int64_t group, int* interval) {
 	}
 }
 
+void reader(LIBSSH2_CHANNEL *channel, int32_t ac, int64_t bindedGroup, string *lastShell) {
+	string reg;
+	char buf[4096];
+	while (true)
+	{
+		memset(buf, 0, 4096);
+		if (libssh2_channel_read(channel, buf, 4096) == 0)
+			return;
+		reg = regex_replace(buf, regex("\\r\\n"), "\n");
+		reg = regex_replace(reg, regex("\\x1b\\]0;.*?\\x1b\\[\\?1034h"), "");
+		reg = regex_replace(reg, regex("\\x1b\\[.*?[mhlHJK]"), "");
+		reg = regex_replace(reg, regex("\\x1b\\].*?[\\x07]"), "");
+		reg = regex_replace(reg, regex("\\x1b(\\(B|\\=|\\>)"), "");
+		reg = regex_replace(reg, regex("\\xe2\\x80[\\x98\\x99]"), "'");
+		reg = regex_replace(reg, regex("\\xe2\\x96\\xbd"), "");
+		if (!reg.empty() && reg.find("Last failed login: ") == string::npos && reg.find(" failed login attempt since the last successful login.") == string::npos && reg.find("Last login: ") == string::npos && reg != *lastShell && reg != "\n")
+			send(ac, bindedGroup, reg);
+	}
+}
+
 class Robot {
 	int32_t ac;
 	int64_t bindedGroup;
@@ -114,6 +142,12 @@ class Robot {
 	bool enableDUI = false;
 	vector<int64_t> duiers;
 	int interval = 0;
+	vector<int64_t> shellers;
+	string lastShell = "";
+	int sock = 0;
+	LIBSSH2_SESSION *session;
+	LIBSSH2_CHANNEL *channel;
+	Pica pica;
 
 	bool isChatter(int64_t qq) {
 		for (auto i = chatters.begin(); i < chatters.end(); i++)
@@ -170,8 +204,26 @@ class Robot {
 				duiers.erase(i);
 	}
 
+	bool isSheller(int64_t qq) {
+		for (auto i = shellers.begin(); i < shellers.end(); i++) {
+			if (*i == qq)
+				return true;
+		}
+		return false;
+	}
+
+	void addSheller(int64_t qq) {
+		shellers.push_back(qq);
+	}
+
+	void deleteSheller(int64_t qq) {
+		for (auto i = shellers.begin(); i < shellers.end(); i++)
+			if (*i == qq)
+				shellers.erase(i);
+	}
+
 public:
-	Robot(int32_t ac, int64_t group, bool allowRepeat) {
+	Robot(int32_t ac, int64_t group, bool allowRepeat) :pica(ac, group) {
 		this->ac = ac;
 		bindedGroup = group;
 		this->allowRepeat = allowRepeat;
@@ -197,6 +249,63 @@ public:
 				int64_t q = stoll(message.substr(14, message.length() - 16));
 				if (isAdmin(q))
 					deleteAdmin(q);
+				return;
+			}
+			if (message == "开启终端")
+			{
+				send(ac, bindedGroup, "滴~~~终端开启中……");
+				fstream data("./CQRobot/shell.txt", ios::in);
+				string ip, username, password;
+				if (data.peek() != EOF)
+					data >> ip >> username >> password;
+				else {
+					data.close();
+					send(ac, bindedGroup, "当前无终端");
+					return;
+				}
+				data.close();
+				WSAStartup(1, &WSADATA());
+				sock = socket(AF_INET, SOCK_STREAM, 0);
+				sockaddr_in sin;
+				sin.sin_family = AF_INET;
+				sin.sin_port = htons(22);
+				inet_pton(AF_INET, ip.c_str(), &sin.sin_addr.s_addr);
+				connect(sock, (sockaddr*)&sin, sizeof(sockaddr_in));
+				libssh2_init(0);
+				session = libssh2_session_init();
+				libssh2_session_handshake(session, sock);
+				libssh2_userauth_password(session, username.c_str(), password.c_str());
+				channel = libssh2_channel_open_session(session);
+				libssh2_channel_request_pty(channel, "xterm");
+				libssh2_channel_shell(channel);
+				thread reader(reader, channel, ac, bindedGroup, &lastShell);
+				reader.detach();
+				addSheller(qq);
+				return;
+			}
+			if (message == "关闭终端")
+			{
+				send(ac, bindedGroup, "叮！终端已关闭~");
+				libssh2_channel_free(channel);
+				libssh2_session_disconnect(session, "");
+				libssh2_session_free(session);
+				closesocket(sock);
+				libssh2_exit();
+				sock = 0;
+				return;
+			}
+			if (message.substr(0, 18) == "添加用户[CQ:at,qq=")
+			{
+				int64_t q = stoll(message.substr(18, message.length() - 20));
+				if (!isSheller(q))
+					addSheller(q);
+				return;
+			}
+			if (message.substr(0, 18) == "删除用户[CQ:at,qq=")
+			{
+				int64_t q = stoll(message.substr(18, message.length() - 20));
+				if (isSheller(q))
+					deleteSheller(q);
 				return;
 			}
 		}
@@ -277,7 +386,7 @@ public:
 			}
 		}
 		if (message == "麦萌萌") {
-			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n你好呀~\\(^0^)/\n我是麦萌萌小管家(￣▽￣～) ！\n咱在群里有以下功能哟~：\n教你百度：xxx\n百度：xxx\n翻译：xxx\n咕咕加密：xxx\n咕咕解密：xxx\n想和我聊天的话有如下方式：\n开始聊天/结束聊天\n[CQ:at,qq=" + to_string(SELF) + "] xxx\n想和我对线的话有如下方式：\n来对线/我怂了\n对线状态也支持@，不可与聊天状态并存\n想睡觉的话可以发送\"睡觉\"嗷~~\n若正在发福利的话，发送\"我要福利\"可以立即获得一份福利哟~！\n咱们愉快相处吧(●'o'●)！");
+			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n你好呀~\\(^0^)/\n我是麦萌萌小管家(￣▽￣～) ！\n咱在群里有以下功能哟~：\n教你百度：xxx\n百度：xxx\n翻译：xxx\n咕咕加密：xxx\n咕咕解密：xxx\n想和我聊天的话有如下方式：\n开始聊天/结束聊天\n[CQ:at,qq=" + to_string(SELF) + "] xxx\n想和我对线的话有如下方式：\n来对线/我怂了\n对线状态也支持@，不可与聊天状态并存\n想睡觉的话可以发送\"睡觉\"嗷~~\n若正在发福利的话，发送\"我要福利\"可以立即获得一份福利哟~！\n用户组中的群员在终端开启时可以向终端发送命令哦：\n#C/#c：发送Ctrl-C\n#Z/#z：发送Ctrl-Z\n# xxx：发送xxx（注意空格）\n发送\"哔咔哔咔\"可以获得5张本子推荐哦~\n咱们愉快相处吧(●'o'●)！");
 			return;
 		}
 		if (message.substr(0, 10) == "教你百度：") {
@@ -344,6 +453,30 @@ public:
 				send(ac, bindedGroup, "不给，哼！(￣▽￣～)");
 			return;
 		}
+		if (message == "哔咔哔咔") {
+			pica.getRandom();
+			return;
+		}
+		if (sock != 0 && isSheller(qq))
+		{
+			if (message.substr(0, 2) == "#C" || message.substr(0, 2) == "#c")
+			{
+				libssh2_channel_write(channel, "\x03", 1);
+				return;
+			}
+			if (message.substr(0, 2) == "#Z" || message.substr(0, 2) == "#z")
+			{
+				libssh2_channel_write(channel, "\x1a", 1);
+				return;
+			}
+			if (message.substr(0, 2) == "# ")
+			{
+				lastShell = string(message.substr(2));
+				libssh2_channel_write(channel, lastShell.c_str(), lastShell.length());
+				libssh2_channel_write(channel, "\n", 1);
+				return;
+			}
+		}
 		if (message.find("[CQ:at,qq=" + to_string(SELF) + "]") != string::npos) {
 			if (enableDUI && isDuier(qq)) {
 				send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n" + DUI());
@@ -357,7 +490,6 @@ public:
 					send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n" + renameReply(AI(str)));
 				return;
 			}
-			send(ac, bindedGroup, "[CQ:at,qq=" + to_string(qq) + "]\n叫我干啥(⊙o⊙)？");
 			return;
 		}
 		if (enableAI && message == "开始聊天" && !isChatter(qq)) {

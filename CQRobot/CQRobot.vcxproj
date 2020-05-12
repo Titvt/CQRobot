@@ -26,6 +26,7 @@
     <ClInclude Include="appmain.h" />
     <ClInclude Include="cqp.h" />
     <ClInclude Include="HTTP.h" />
+    <ClInclude Include="Pica.h" />
     <ClInclude Include="Robot.h" />
     <ClInclude Include="UrlEncode.h" />
   </ItemGroup>
@@ -95,6 +96,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>C:\Program Files (x86)\OpenSSL-Win32\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files (x86)\OpenSSL-Win32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
