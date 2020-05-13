@@ -1,7 +1,6 @@
 #define CURL_STATICLIB
 
 #include "libcurl\curl.h"
-#include <openssl\sha.h>
 #include <openssl\hmac.h>
 #include <urlmon.h>
 
@@ -88,9 +87,9 @@ public:
 			curl_easy_setopt(curl, CURLOPT_HTTPPROXYTUNNEL, 1);
 			curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);
 			curl_easy_setopt(curl, CURLOPT_WRITEDATA, this);
-			curl_easy_perform(curl);
 			num = 0;
 			downloading = false;
+			curl_easy_perform(curl);
 		}
 		curl_easy_cleanup(curl);
 	}
@@ -131,7 +130,7 @@ size_t callback(void *ptr, size_t size, size_t nmemb, void *stream)
 			Sleep(100);
 		pica->downloading = true;
 		if (URLDownloadToFile(0, urls[i].c_str(), L"./data/image/pica", 0, 0) == S_OK) {
-			int id = sendPica(pica->ac, pica->bindedGroup, "[CQ:image,file=pica]" + names[i]);
+			sendPica(pica->ac, pica->bindedGroup, "[CQ:image,file=pica]" + names[i]);
 			pica->num++;
 		}
 		pica->downloading = false;
