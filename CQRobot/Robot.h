@@ -84,13 +84,13 @@ string degu(string str) {
 }
 
 void sendImage(int32_t ac, int64_t group) {
-	srand(time(0));
 	_finddata_t fileinfo;
 	int handle = _findfirst("./CQRobot/image/*", &fileinfo);
 	int total = -1;
 	while (!_findnext(handle, &fileinfo))
 		total++;
 	_findclose(handle);
+	srand(time(0));
 	int random = rand() % total + 2;
 	handle = _findfirst("./CQRobot/image/*", &fileinfo);
 	while (random--)
@@ -102,7 +102,8 @@ void sendImage(int32_t ac, int64_t group) {
 
 void timer(int32_t ac, int64_t group, int* interval) {
 	int old = *interval;
-	sendImage(ac, group);
+	thread sendImage(sendImage, ac, group);
+	sendImage.detach();
 	Sleep(*interval * 1000);
 	if (*interval == old) {
 		thread timer(timer, ac, group, interval);
